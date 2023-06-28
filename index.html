@@ -1,0 +1,133 @@
+<html>
+<head>
+  <style>
+    #canvas {
+      border: 1px solid black;
+    }
+    #code {
+      width: 400px;
+      height: 300px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Draw and get HTML code</h1>
+  <canvas id="canvas" width="400" height="300"></canvas>
+  <div>
+    <label for="color">Color:</label>
+    <input type="color" id="color" value="#000000">
+    <label for="width">Width:</label>
+    <input type="range" id="width" min="1" max="10" value="5">
+    <button id="clear">Clear</button>
+    <button id="save">Save</button>
+    <button id="generate">Generate HTML code</button>
+  </div>
+  <textarea id="code" readonly></textarea>
+  <script>
+    // Get the canvas element and its context
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+
+    // Set some initial variables
+    var drawing = false; // Whether the user is drawing or not
+    var x = 0; // The x coordinate of the mouse
+    var y = 0; // The y coordinate of the mouse
+    var color = "black"; // The color of the stroke
+    var width = 5; // The width of the stroke
+
+    // Add event listeners for mouse events
+    canvas.addEventListener("mousedown", function(e) {
+      // Start drawing and get the mouse position
+      drawing = true;
+      x = e.offsetX;
+      y = e.offsetY;
+    });
+
+    canvas.addEventListener("mousemove", function(e) {
+      if (drawing) {
+        // Draw a line from the previous position to the current position
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.stroke();
+        ctx.closePath();
+
+        // Update the mouse position
+        x = e.offsetX;
+        y = e.offsetY;
+      }
+    });
+
+    canvas.addEventListener("mouseup", function(e) {
+      // Stop drawing
+      drawing = false;
+    });
+
+    canvas.addEventListener("mouseout", function(e) {
+      // Stop drawing
+      drawing = false;
+    });
+
+    // Get the color picker, the slider, the clear button, the save button, the generate button and the code textarea elements
+    var colorPicker = document.getElementById("color");
+    var slider = document.getElementById("width");
+    var clearButton = document.getElementById("clear");
+    var saveButton = document.getElementById("save");
+    var generateButton = document.getElementById("generate");
+    var code = document.getElementById("code");
+
+    // Add event listeners for the color picker and the slider change events
+    colorPicker.addEventListener("change", function(e) {
+      // Update the color variable with the selected color
+      color = e.target.value;
+    });
+
+    slider.addEventListener("change", function(e) {
+      // Update the width variable with the selected width
+      width = e.target.value;
+    });
+
+    // Add an event listener for the clear button click
+    
+        clearButton.addEventListener("click", function(e) {
+      // Clear the canvas by filling it with white color
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // Add an event listener for the save button click
+    saveButton.addEventListener("click", function(e) {
+      // Get the image data from the canvas
+      var imageData = canvas.toDataURL("image/png");
+
+      // Create a link element with the image data as the href attribute and a download attribute
+      var link = document.createElement("a");
+      link.href = imageData;
+      link.download = "drawing.png";
+
+      // Append the link to the document and click it
+      document.body.appendChild(link);
+      link.click();
+
+      // Remove the link from the document
+      document.body.removeChild(link);
+    });
+
+    // Add an event listener for the generate button click
+    generateButton.addEventListener("click", function(e) {
+      // Get the image data from the canvas
+      var imageData = canvas.toDataURL();
+
+      // Generate the HTML code for displaying the image
+      var htmlCode = "<img src='" + imageData + "' alt='Drawing'>";
+
+      // Display the HTML code in the textarea
+      code.value = htmlCode;
+    });
+  </script>
+</body>
+</html>
